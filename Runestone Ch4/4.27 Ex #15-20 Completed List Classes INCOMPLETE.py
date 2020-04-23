@@ -1,6 +1,6 @@
 class Node:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, initdata):
+        self.data = initdata
         self.next = None
 
     def getData(self):
@@ -9,55 +9,39 @@ class Node:
     def getNext(self):
         return self.next
 
-    def setData(self, data):
-        self.data = data
+    def setData(self, newdata):
+        self.data = newdata
 
-    def setNext(self, new_next):
-        self.next = new_next
+    def setNext(self, newnext):
+        self.next = newnext
 
-class OrderedList:
+
+class UnorderedList:
+
     def __init__(self):
         self.head = None
-        self.last = None
-        self.size = 0
 
-    def size(self):
-        return self.size
+    def isEmpty(self):
+        return self.head == None
 
     def add(self, item):
         temp = Node(item)
-        if self.head is None:
-            self.head = temp
-            self.last = self.head
-        else:
-            temp.setNext(self.head)
-            self.head = temp
-        self.size += 1
+        temp.setNext(self.head)
+        self.head = temp
 
-    def remove(self, item):
+    def size(self):
         current = self.head
-        previous = None
-        found = False
-        # iterating through elements of the list
-        while not found:
-            if current.getData() == item:
-                found = True
-            else:
-                previous = current
-                current = current.getNext()
-        if found and previous is None:  # if the item is the head
-            self.head = current.getNext()
-            self.size -= 1
-        elif found:
-            previous.setNext(current.getNext())
-            self.size -= 1
-        else:
-            raise RuntimeError("Item not in list!")
+        count = 0
+        while current != None:
+            count = count + 1
+            current = current.getNext()
+
+        return count
 
     def search(self, item):
         current = self.head
         found = False
-        while current is not None and not found:
+        while current != None and not found:
             if current.getData() == item:
                 found = True
             else:
@@ -65,84 +49,193 @@ class OrderedList:
 
         return found
 
-    def pop(self, pos=None):
-        # if no position is passed in
-        if pos is None:
-            current = self.head
-            previous = None
-            while not current == self.last:
+    def remove(self, item):
+        current = self.head
+        previous = None
+        found = False
+        while not found:
+            if current.getData() == item:
+                found = True
+            else:
                 previous = current
                 current = current.getNext()
 
-            if self.last == self.head:  # to deal with the situation in which the head is the only element in the list
-                temp = self.head
-                self.head = None
-                return temp
-            else:
-                temp = self.last
-                self.last = previous
-                self.last.setNext(None)
-                return temp
-        # if a position is passed in
+        if previous == None:
+            self.head = current.getNext()
         else:
+            previous.setNext(current.getNext())
+
+    def pop(self):
+        current = self.head
+        previous = None
+        while current.getNext() is not None:
+            previous = current
+            current = current.getNext()
+
+        previous.setNext(None)
+        return current.getData()
+
+    def insert(self, pos, item):
+        current = self.head
+        i = 0
+        while i != pos:
+            current = current.getNext()
+            i += 1
+        tmp = Node(item)
+        tmp.setNext(current.getNext())
+        current.setNext(tmp)
+
+    def append(self, item):
+        current = self.head
+        previous = None
+        while current is not None:
+            previous = current
+            current = current.getNext()
+
+        previous.setNext(Node(item))
+
+    def index(self, item):
+        current = self.head
+        i = 0
+        while current.getData() != item:
+            current = current.getNext()
+            i += 1
+        return i
+
+    def __str__(self):
+        current = self.head
+        s = '['
+        while current.getNext() is not None:
+            s += str(current.getData())
+            s += ', '
+            current = current.getNext()
+
+        s += str(current.getData()) + ']'
+        return s
+
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            i = 0
             current = self.head
-            for i in range(pos - 1):
+            while i < key.start:
                 current = current.getNext()
-            temp = current.getNext()
-            current.setNext(temp.getNext())
-            return temp
+                i += 1
+
+            tmp = []
+
+            while i < key.stop:
+                tmp.append(current.getData())
+                current = current.getNext()
+                i += 1
+
+            return tmp
+        return []  # should never be reached
+
+
+class OrderedList:
+    def __init__(self):
+        self.head = None
+
+    def search(self, item):
+        current = self.head
+        found = False
+        stop = False
+        while current != None and not found and not stop:
+            if current.getData() == item:
+                found = True
+            else:
+                if current.getData() > item:
+                    stop = True
+                else:
+                    current = current.getNext()
+
+        return found
+
+    def add(self, item):
+        current = self.head
+        previous = None
+        stop = False
+        while current != None and not stop:
+            if current.getData() > item:
+                stop = True
+            else:
+                previous = current
+                current = current.getNext()
+
+        temp = Node(item)
+        if previous == None:
+            temp.setNext(self.head)
+            self.head = temp
+        else:
+            temp.setNext(current)
+            previous.setNext(temp)
 
     def isEmpty(self):
         return self.head is None
 
-    def index(self, item):
-        pos = 0
+    def size(self):
         current = self.head
-        found = False
-        # iterates through the elements of the list
-        # if there is more than one occurrence of an element,
-        # the index of the first occurrence is returned
-        while current is not None and not found:
-            if current.getData() == item:
-                found = True
+        count = 0
+        while current != None:
+            count = count + 1
             current = current.getNext()
-            pos += 1
-        return pos
+
+        return count
+
+    def remove(self, item):
+        current = self.head
+        previous = None
+
+        while current.getData() != item:
+            previous = current
+            current = current.getNext()
+
+        previous.setNext(current.getNext())
+
+    def index(self, item):
+        current = self.head
+        i = 0
+        while current.getData() != item:
+            current = current.getNext()
+            i += 1
+        return i
+
+    def pop(self, pos=-1):
+        current = self.head
+        previous = None
+        if pos == -1:
+            while current.getNext() is not None:
+                previous = current
+                current = current.getNext()
+
+            previous.setNext(None)
+
+        else:
+            i = 0
+            while i < pos:
+                previous = current
+                current = current.getNext()
+
+            previous.setNext(current.getNext())
 
     def __str__(self):
         current = self.head
-        final_string = "["
-        # iterating through the elements of the list
-        while current is not None:
-            final_string += str(current.getData()) + ", "
+        s = '['
+        while current.getNext() is not None:
+            s += str(current.getData())
+            s += ', '
             current = current.getNext()
-        # to get rid of the ", " that follows the last element and to add the closing "]"
-        final_string = final_string[:len(final_string) - 2] + "]"
-        return final_string
+
+        s += str(current.getData()) + ']'
+        return s
 
 
-class UnorderedList(OrderedList):
-    def __init__(self):
-        super(OrderedList)
-        super().__init__()
-
-    def insert(self, pos, item):
-        current = self.head
-        # iterating through elements of the list
-        if pos == 0:
-            temp = self.head
-            self.head = Node(item)
-            self.head.setNext(temp)
-        else:
-            count = 0
-            while count < pos:
-                current = current.getNext()
-                count += 1
-            temp = Node(item)
-            temp.setNext(current.getNext())
-            current.setNext(temp)
-
-    def append(self, item):
-        temp = Node(item)
-        self.last.setNext(temp)
-        self.last = temp
+mylist = UnorderedList()
+mylist.add(31)
+mylist.add(77)
+mylist.add(17)
+mylist.add(93)
+mylist.add(26)
+mylist.add(54)
+mylist.add(100)
+print(mylist[0:2])
