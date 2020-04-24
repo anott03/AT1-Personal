@@ -7,19 +7,8 @@ def quickSortHelper(alist, first, last):
 
         splitpoint = partition(alist, first, last)
 
-        if splitpoint - 1 - first > 3:
-            quickSortHelper(alist, first, splitpoint - 1)
-        else:
-            tmp = alist[first:splitpoint - 1]
-            insertionSort(tmp)
-            alist[first:splitpoint - 1] = tmp
-
-        if last - (splitpoint + 1) > 3:
-            quickSortHelper(alist, splitpoint + 1, last)
-        else:
-            tmp = alist[splitpoint + 1:last]
-            insertionSort(tmp)
-            alist[splitpoint + 1:last] = tmp
+        quickSortHelper(alist, first, splitpoint - 1)
+        quickSortHelper(alist, splitpoint + 1, last)
 
 
 def partition(alist, first, last):
@@ -67,16 +56,16 @@ def insertionSort(alist, first=0, last=-1):
         alist[position] = currentvalue
 
 
-alist = []
-
-import random
-for i in range(0, 50):
-    alist.append(random.randint(0, 500))
+# alist = []
+#
+# import random
+# for i in range(0, 50):
+#     alist.append(random.randint(0, 500))
 
 # bug where the second item is not always sorted
 # ex in [54,26,93,17,77,31,44,55,20] 26 does not get sorted
 
-# alist = [54,26,93,17,77,31,44,55,20]
+alist = [54,26,93,17,77,31,44,55,20]
 
 quickSort(alist)
 print(alist)
