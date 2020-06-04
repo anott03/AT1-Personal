@@ -5,12 +5,7 @@ class TreeNode:
         self.leftChild = left
         self.rightChild = right
         self.parent = parent
-
-    def __iter__(self):
-        current = self
-        while current is not None:
-            current = current.findSuccessor()
-            yield current
+        self.successor = self.findSuccessor()
 
     def hasLeftChild(self):
         return self.leftChild
@@ -206,13 +201,3 @@ class BinarySearchTree:
                                     currentNode.rightChild.rightChild)
 
 
-
-
-mytree = BinarySearchTree()
-mytree[3]="red"
-mytree[4]="blue"
-mytree[6]="yellow"
-mytree[2]="at"
-
-print(mytree[6])
-print(mytree[2])
